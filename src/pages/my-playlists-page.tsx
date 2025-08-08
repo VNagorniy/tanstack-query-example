@@ -1,9 +1,9 @@
-import { Playlists } from './playlists-page';
+import { Playlists } from '../features/playlists';
 
 export function MyPlaylistsPage() {
 	return (
 		<>
-			<h2>Hello</h2>
+			<h2>My playlists</h2>
 			<Playlists />
 		</>
 	);
