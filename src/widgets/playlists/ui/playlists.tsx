@@ -1,7 +1,8 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { client } from '../shared/api/client';
-import { Pagination } from '../shared/ui/pagination/pagination';
+import { client } from '../../../shared/api/client';
+import { Pagination } from '../../../shared/ui/pagination/pagination';
 import { useState } from 'react';
+import { DeletePlaylist } from '../../../features/playlists/delete-playlist/ui/delete-playlist';
 
 type Props = {
 	userId?: string;
@@ -45,7 +46,9 @@ export const Playlists = ({ userId }: Props) => {
 				<Pagination pagesCount={query.data.meta.pagesCount} currentPage={query.data.meta.page} onPageNumberChange={setPage} isFetching={query.isFetching} />
 				<ul>
 					{query.data.data.map((playlist) => (
-						<li key={playlist.id}>{playlist.attributes.title}</li>
+						<li key={playlist.id}>
+							{playlist.attributes.title} <DeletePlaylist playlistId={playlist.id} />
+						</li>
 					))}
 				</ul>
 			</div>
