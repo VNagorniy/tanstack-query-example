@@ -23,7 +23,7 @@ export function MyPlaylistsPage() {
 			<hr />
 			<Playlists userId={data.userId} onPlaylistSelected={setEditingPlaylistId} />
 			<hr />
-			{editingPlaylistId && <EditPlaylistForm key={editingPlaylistId} playlistId={editingPlaylistId} />}
+			<EditPlaylistForm playlistId={editingPlaylistId} />
 		</div>
 	);
 }

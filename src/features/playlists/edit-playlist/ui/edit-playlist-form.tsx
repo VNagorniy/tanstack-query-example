@@ -2,20 +2,26 @@ import { useForm } from 'react-hook-form';
 import type { SchemaUpdatePlaylistRequestPayload } from '../../../../shared/api/schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { client } from '../../../../shared/api/client';
+import { useEffect } from 'react';
 
 type Props = {
-	playlistId: string;
+	playlistId: string | null;
 };
 
 export const EditPlaylistForm = ({ playlistId }: Props) => {
-	const { register, handleSubmit } = useForm<SchemaUpdatePlaylistRequestPayload>();
+	const { register, handleSubmit, reset } = useForm<SchemaUpdatePlaylistRequestPayload>();
+
+	useEffect(() => {
+		reset();
+	}, [playlistId]);
 
 	const { data, isPending, isError } = useQuery({
 		queryKey: ['playlists', playlistId],
 		queryFn: async () => {
-			const response = await client.GET('/playlists/{playlistId}', { params: { path: { playlistId } } });
+			const response = await client.GET('/playlists/{playlistId}', { params: { path: { playlistId: playlistId! } } });
 			return response.data!;
-		}
+		},
+		enabled: !!playlistId
 	});
 
 	const queryClient = useQueryClient();
@@ -23,7 +29,7 @@ export const EditPlaylistForm = ({ playlistId }: Props) => {
 	const { mutate } = useMutation({
 		mutationFn: async (data: SchemaUpdatePlaylistRequestPayload) => {
 			const response = await client.PUT('/playlists/{playlistId}', {
-				params: { path: { playlistId } },
+				params: { path: { playlistId: playlistId! } },
 				body: { ...data, tagIds: [] }
 			});
 			return response.data;
@@ -40,6 +46,7 @@ export const EditPlaylistForm = ({ playlistId }: Props) => {
 		mutate(data);
 	};
 
+	if (!playlistId) return <></>;
 	if (isPending) return <p>...Loading</p>;
 	if (isError) return <p>Error</p>;
 
@@ -52,7 +59,7 @@ export const EditPlaylistForm = ({ playlistId }: Props) => {
 			<p>
 				<textarea {...register('description')} defaultValue={data.data.attributes.description!}></textarea>
 			</p>
-			<button type="submit">Create</button>
+			<button type="submit">Save</button>
 		</form>
 	);
 };
