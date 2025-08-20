@@ -6,9 +6,10 @@ import { DeletePlaylist } from '../../../features/playlists/delete-playlist/ui/d
 
 type Props = {
 	userId?: string;
+	onPlaylistSelected?: (playlistId: string) => void;
 };
 
-export const Playlists = ({ userId }: Props) => {
+export const Playlists = ({ userId, onPlaylistSelected }: Props) => {
 	const [page, setPage] = useState(1);
 	const [search, setSearch] = useState('');
 
@@ -33,6 +34,10 @@ export const Playlists = ({ userId }: Props) => {
 		placeholderData: keepPreviousData
 	});
 
+	const handlePlaylistClick = (playlistId: string) => {
+		onPlaylistSelected?.(playlistId);
+	};
+
 	if (query.isPending) return <span>Loading...</span>;
 	if (query.isError) return <span>Error: {JSON.stringify(query.error)}</span>;
 
@@ -46,7 +51,7 @@ export const Playlists = ({ userId }: Props) => {
 				<Pagination pagesCount={query.data.meta.pagesCount} currentPage={query.data.meta.page} onPageNumberChange={setPage} isFetching={query.isFetching} />
 				<ul>
 					{query.data.data.map((playlist) => (
-						<li key={playlist.id}>
+						<li key={playlist.id} onClick={() => handlePlaylistClick(playlist.id)}>
 							{playlist.attributes.title} <DeletePlaylist playlistId={playlist.id} />
 						</li>
 					))}
