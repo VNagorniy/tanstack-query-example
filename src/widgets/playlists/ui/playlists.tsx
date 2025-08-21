@@ -1,9 +1,7 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { client } from '../../../shared/api/client';
 import { Pagination } from '../../../shared/ui/pagination/pagination';
 import { useState } from 'react';
 import { DeletePlaylist } from '../../../features/playlists/delete-playlist/ui/delete-playlist';
-import { playlistsKeys } from '../../../shared/api/keys-factories/playlists-keys-factory';
+import { usePlaylistsQuery } from '../../api/use-playlists-query';
 
 type Props = {
 	userId?: string;
@@ -15,33 +13,7 @@ export const Playlists = ({ userId, onPlaylistSelected, isSearchActive }: Props)
 	const [pageNumber, setPageNumber] = useState(1);
 	const [search, setSearch] = useState('');
 
-	const key = userId ? playlistsKeys.myList() : playlistsKeys.list({ search, pageNumber });
-	const queryParams = userId
-		? {
-				userId
-		  }
-		: {
-				pageNumber,
-				search
-		  };
-
-	const query = useQuery({
-		//eslint-disable-next-line @tanstack/query/exhaustive-deps
-		queryKey: key,
-		queryFn: async ({ signal }) => {
-			const response = await client.GET('/playlists', {
-				params: {
-					query: queryParams
-				},
-				signal
-			});
-			if (response.error) {
-				throw (response as unknown as { error: Error }).error;
-			}
-			return response.data;
-		},
-		placeholderData: keepPreviousData
-	});
+	const query = usePlaylistsQuery(userId, { pageNumber, search });
 
 	const handlePlaylistClick = (playlistId: string) => {
 		onPlaylistSelected?.(playlistId);
@@ -61,7 +33,7 @@ export const Playlists = ({ userId, onPlaylistSelected, isSearchActive }: Props)
 				</>
 			)}
 			<div>
-				<Pagination pagesCount={query.data.meta.pagesCount} currentPage={query.data.meta.page} onPageNumberChange={setPageNumber} isFetching={query.isFetching} />
+				<Pagination pagesCount={query.data.meta.pagesCount} currentPage={pageNumber} onPageNumberChange={setPageNumber} isFetching={query.isFetching} />
 				<ul>
 					{query.data.data.map((playlist) => (
 						<li key={playlist.id} onClick={() => handlePlaylistClick(playlist.id)}>
