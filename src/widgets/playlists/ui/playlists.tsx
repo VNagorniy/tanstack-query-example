@@ -3,6 +3,7 @@ import { client } from '../../../shared/api/client';
 import { Pagination } from '../../../shared/ui/pagination/pagination';
 import { useState } from 'react';
 import { DeletePlaylist } from '../../../features/playlists/delete-playlist/ui/delete-playlist';
+import { playlistsKeys } from '../../../shared/api/keys-factories/playlists-keys-factory';
 
 type Props = {
 	userId?: string;
@@ -11,16 +12,16 @@ type Props = {
 };
 
 export const Playlists = ({ userId, onPlaylistSelected, isSearchActive }: Props) => {
-	const [page, setPage] = useState(1);
+	const [pageNumber, setPageNumber] = useState(1);
 	const [search, setSearch] = useState('');
 
-	const key = userId ? ['playlists', 'my', userId] : ['playlists', { page, search }];
+	const key = userId ? playlistsKeys.myList() : playlistsKeys.list({ search, pageNumber });
 	const queryParams = userId
 		? {
 				userId
 		  }
 		: {
-				pageNumber: page,
+				pageNumber,
 				search
 		  };
 
@@ -60,7 +61,7 @@ export const Playlists = ({ userId, onPlaylistSelected, isSearchActive }: Props)
 				</>
 			)}
 			<div>
-				<Pagination pagesCount={query.data.meta.pagesCount} currentPage={query.data.meta.page} onPageNumberChange={setPage} isFetching={query.isFetching} />
+				<Pagination pagesCount={query.data.meta.pagesCount} currentPage={query.data.meta.page} onPageNumberChange={setPageNumber} isFetching={query.isFetching} />
 				<ul>
 					{query.data.data.map((playlist) => (
 						<li key={playlist.id} onClick={() => handlePlaylistClick(playlist.id)}>
