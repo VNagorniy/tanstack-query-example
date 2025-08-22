@@ -6,9 +6,10 @@ import { useUpdatePlaylistMutation } from '../api/use-update-playlist-mutation';
 
 type Props = {
 	playlistId: string | null;
+	onCancelEditing: () => void;
 };
 
-export const EditPlaylistForm = ({ playlistId }: Props) => {
+export const EditPlaylistForm = ({ playlistId, onCancelEditing }: Props) => {
 	const { register, handleSubmit, reset } = useForm<SchemaUpdatePlaylistRequestPayload>();
 
 	useEffect(() => {
@@ -17,10 +18,18 @@ export const EditPlaylistForm = ({ playlistId }: Props) => {
 
 	const { data, isPending, isError } = usePlaylistQuery(playlistId);
 
-	const { mutate } = useUpdatePlaylistMutation();
+	const { mutate } = useUpdatePlaylistMutation({
+		onSuccess: () => {
+			onCancelEditing();
+		}
+	});
 
 	const onSubmit = (data: SchemaUpdatePlaylistRequestPayload) => {
 		mutate({ ...data, playlistId: playlistId! });
+	};
+
+	const handleCancelEditingClick = () => {
+		onCancelEditing();
 	};
 
 	if (!playlistId) return <></>;
@@ -36,7 +45,10 @@ export const EditPlaylistForm = ({ playlistId }: Props) => {
 			<p>
 				<textarea {...register('description')} defaultValue={data.data.attributes.description!}></textarea>
 			</p>
-			<button type="submit">Save</button>
+			<button type={'submit'}>Save</button>
+			<button type={'reset'} onClick={handleCancelEditingClick}>
+				Cancel
+			</button>
 		</form>
 	);
 };

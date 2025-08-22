@@ -5,7 +5,7 @@ import { playlistsKeys } from '../../../../shared/api/keys-factories/playlists-k
 
 type MutationVariables = SchemaUpdatePlaylistRequestPayload & { playlistId: string };
 
-export const useUpdatePlaylistMutation = () => {
+export const useUpdatePlaylistMutation = ({ onSuccess }: { onSuccess?: () => void }) => {
 	const queryClient = useQueryClient();
 
 	const key = playlistsKeys.myList();
@@ -48,6 +48,9 @@ export const useUpdatePlaylistMutation = () => {
 		// If the mutation fails, use the context we returned above
 		onError: (_, __: MutationVariables, context) => {
 			queryClient.setQueryData(['playlists', key], context!.previousMyPlaylists);
+		},
+		onSuccess: () => {
+			onSuccess?.();
 		},
 		// Always refetch after error or success:
 		onSettled: (_, __, variables: MutationVariables) => {

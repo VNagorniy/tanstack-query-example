@@ -28,7 +28,7 @@ export function MyPlaylistsPage() {
 			<hr />
 			<Playlists userId={data.userId} onPlaylistSelected={(playlistId: string) => setEditingPlaylistId(playlistId)} onPlaylistDeleted={handleDeletedPlaylistClick} />
 			<hr />
-			<EditPlaylistForm playlistId={editingPlaylistId} />
+			<EditPlaylistForm playlistId={editingPlaylistId} onCancelEditing={() => setEditingPlaylistId(null)} />
 		</div>
 	);
 }
