@@ -1,4 +1,4 @@
-import { callbackUrl, useLoginMutation } from '../../api/use-login-mutation';
+import { callbackUrl, useLoginMutation } from '../api/use-login-mutation';
 
 export const LoginButton = () => {
 	const mutation = useLoginMutation();

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { client } from '../../shared/api/client';
-import { authKeys } from '../../shared/api/keys-factories/auth-keys-factory';
+import { client } from '../../../shared/api/client';
+import { authKeys } from '../../../shared/api/keys-factories/auth-keys-factory';
 
 export const useMeQuery = () =>
 	useQuery({

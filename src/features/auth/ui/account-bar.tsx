@@ -1,4 +1,4 @@
-import { useMeQuery } from '../../api/use-me-query';
+import { useMeQuery } from '../api/use-me-query';
 import { CurrentUser } from './current-user/current-user';
 import { LoginButton } from './login-button';
 

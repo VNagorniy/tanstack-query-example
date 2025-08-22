@@ -1,5 +1,5 @@
 import { Navigate } from '@tanstack/react-router';
-import { useMeQuery } from '../features/api/use-me-query';
+import { useMeQuery } from '../features/auth/api/use-me-query';
 import { Playlists } from '../widgets/playlists/ui/playlists';
 import { AddPlaylistForm } from '../features/playlists/add-playlist/ui/add-playlist-form';
 import { useState } from 'react';
