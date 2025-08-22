@@ -21,9 +21,7 @@ export const useDeleteMutation = () => {
 				};
 			});
 
-			queryClient.setQueryData(playlistsKeys.detail(playlistId), () => {
-				return null;
-			});
+			queryClient.removeQueries({ queryKey: playlistsKeys.detail(playlistId) });
 		}
 	});
 };

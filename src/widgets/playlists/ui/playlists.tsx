@@ -6,10 +6,11 @@ import { usePlaylistsQuery } from '../../api/use-playlists-query';
 type Props = {
 	userId?: string;
 	onPlaylistSelected?: (playlistId: string) => void;
+	onPlaylistDeleted?: (playlistId: string) => void;
 	isSearchActive?: boolean;
 };
 
-export const Playlists = ({ userId, onPlaylistSelected, isSearchActive }: Props) => {
+export const Playlists = ({ userId, onPlaylistSelected, onPlaylistDeleted, isSearchActive }: Props) => {
 	const [pageNumber, setPageNumber] = useState(1);
 	const [search, setSearch] = useState('');
 
@@ -17,6 +18,10 @@ export const Playlists = ({ userId, onPlaylistSelected, isSearchActive }: Props)
 
 	const handlePlaylistClick = (playlistId: string) => {
 		onPlaylistSelected?.(playlistId);
+	};
+
+	const handleDeletedPlaylistClick = (playlistId: string) => {
+		onPlaylistDeleted?.(playlistId);
 	};
 
 	if (query.isPending) return <span>Loading...</span>;
@@ -36,8 +41,8 @@ export const Playlists = ({ userId, onPlaylistSelected, isSearchActive }: Props)
 				<Pagination pagesCount={query.data.meta.pagesCount} currentPage={pageNumber} onPageNumberChange={setPageNumber} isFetching={query.isFetching} />
 				<ul>
 					{query.data.data.map((playlist) => (
-						<li key={playlist.id} onClick={() => handlePlaylistClick(playlist.id)}>
-							{playlist.attributes.title} <DeletePlaylist playlistId={playlist.id} />
+						<li key={playlist.id}>
+							<span onClick={() => handlePlaylistClick(playlist.id)}> {playlist.attributes.title}</span> <DeletePlaylist playlistId={playlist.id} onDeleted={handleDeletedPlaylistClick} />
 						</li>
 					))}
 				</ul>
