@@ -1,36 +1,15 @@
 import { createRoot } from 'react-dom/client';
 import '../styles/reset.css';
 import '../styles/index.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { routeTree } from '../routes/routeTree.gen.ts';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-
-// Create a new router instance
-const router = createRouter({ routeTree });
-
-// Register the router instance for type safety
-declare module '@tanstack/react-router' {
-	interface Register {
-		router: typeof router;
-	}
-}
-
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			staleTime: Infinity,
-			refetchOnMount: true,
-			refetchOnWindowFocus: true,
-			refetchOnReconnect: true,
-			gcTime: 5 * 1000
-		}
-	}
-});
+import { RouterProvider } from '@tanstack/react-router';
+import { queryClientInstance } from '../tanstack-query/query-client-instance';
+import { routerInstance } from '../tanstack-router/router-instance';
 
 createRoot(document.getElementById('root')!).render(
-	<QueryClientProvider client={queryClient}>
-		<RouterProvider router={router} />
+	<QueryClientProvider client={queryClientInstance}>
+		<RouterProvider router={routerInstance} />
 		<ReactQueryDevtools initialIsOpen={false} />
 	</QueryClientProvider>
 );
