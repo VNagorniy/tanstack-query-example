@@ -2,10 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { SchemaGetPlaylistsOutput, SchemaUpdatePlaylistRequestPayload } from '../../../../shared/api/schema.ts';
 import { client } from '../../../../shared/api/client.ts';
 import { playlistsKeys } from '../../../../shared/api/keys-factories/playlists-keys-factory.ts';
+import type { JsonApiErrorDocument } from '../../../../shared/util/json-api-error.ts';
 
 type MutationVariables = SchemaUpdatePlaylistRequestPayload & { playlistId: string };
 
-export const useUpdatePlaylistMutation = ({ onSuccess }: { onSuccess?: () => void }) => {
+export const useUpdatePlaylistMutation = ({ onSuccess, onError }: { onSuccess?: () => void; onError?: (error: JsonApiErrorDocument) => void }) => {
 	const queryClient = useQueryClient();
 
 	const key = playlistsKeys.myList();
@@ -46,8 +47,9 @@ export const useUpdatePlaylistMutation = ({ onSuccess }: { onSuccess?: () => voi
 			return { previousMyPlaylists };
 		},
 		// If the mutation fails, use the context we returned above
-		onError: (_, __: MutationVariables, context) => {
-			queryClient.setQueryData(['playlists', key], context!.previousMyPlaylists);
+		onError: (error, __: MutationVariables, context) => {
+			queryClient.setQueryData(key, context!.previousMyPlaylists);
+			onError?.(error as unknown as JsonApiErrorDocument);
 		},
 		onSuccess: () => {
 			onSuccess?.();

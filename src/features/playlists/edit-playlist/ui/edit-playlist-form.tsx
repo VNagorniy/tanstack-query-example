@@ -3,6 +3,7 @@ import type { SchemaUpdatePlaylistRequestPayload } from '../../../../shared/api/
 import { useEffect } from 'react';
 import { usePlaylistQuery } from '../api/use-playlist-query';
 import { useUpdatePlaylistMutation } from '../api/use-update-playlist-mutation';
+import { queryErrorHandlerForRHFFactory } from '../../../../shared/ui/util/query-error-handler-for-rhf-factory';
 
 type Props = {
 	playlistId: string | null;
@@ -10,7 +11,13 @@ type Props = {
 };
 
 export const EditPlaylistForm = ({ playlistId, onCancelEditing }: Props) => {
-	const { register, handleSubmit, reset } = useForm<SchemaUpdatePlaylistRequestPayload>();
+	const {
+		register,
+		handleSubmit,
+		reset,
+		setError,
+		formState: { errors }
+	} = useForm<SchemaUpdatePlaylistRequestPayload>();
 
 	useEffect(() => {
 		reset();
@@ -21,7 +28,8 @@ export const EditPlaylistForm = ({ playlistId, onCancelEditing }: Props) => {
 	const { mutate } = useUpdatePlaylistMutation({
 		onSuccess: () => {
 			onCancelEditing();
-		}
+		},
+		onError: queryErrorHandlerForRHFFactory({ setError })
 	});
 
 	const onSubmit = (data: SchemaUpdatePlaylistRequestPayload) => {
@@ -42,13 +50,17 @@ export const EditPlaylistForm = ({ playlistId, onCancelEditing }: Props) => {
 			<p>
 				<input {...register('title')} defaultValue={data.data.attributes.title} />
 			</p>
+			{errors.title && <p>{errors.title.message}</p>}
 			<p>
 				<textarea {...register('description')} defaultValue={data.data.attributes.description!}></textarea>
 			</p>
+			{errors.description && <p>{errors.description.message}</p>}
 			<button type={'submit'}>Save</button>
 			<button type={'reset'} onClick={handleCancelEditingClick}>
 				Cancel
 			</button>
+
+			{errors.root?.server && <p>{errors.root?.server.message}</p>}
 		</form>
 	);
 };
